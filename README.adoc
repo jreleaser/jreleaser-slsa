@@ -1,13 +1,19 @@
 = JReleaser SLSA
 :linkattrs:
-:project-owner: jreleaser
-:project-name:  jreleaser-slsa
+:project-owner:   jreleaser
+:project-name:    jreleaser-slsa
+:project-version: 1.0.0
 
 image:https://img.shields.io/github/v/release/{project-owner}/{project-name}["GitHub release", link="https://github.com/{project-owner}/{project-name}/releases"]
 image:https://img.shields.io/mastodon/follow/109318759441003625?domain=https%3A%2F%2Ffosstodon.org&style=social[Mastodon Follow]
 image:https://img.shields.io/badge/%20-white?label=Follow%20%40jreleaser.org&labelColor=white&logo=bluesky&style=flat[Bluesky Follow, link="https://bsky.app/profile/jreleaser.org"]
 
-A set of link:https://github.com/slsa-framework/[SLSA builders] for different languages, relying on link:https://github.com/jreleaser/release-action[].
+A set of link:https://github.com/slsa-framework/[SLSA builders] for different languages, relying on link:https://github.com/jreleaser/release-action[]. The following languages are currently supported, more to comee later:
+
+ * <<Go>>
+ * <<Java>>
+ * <<Rust>>
+ * <<Zig>>
 
 == Builders
 
@@ -16,6 +22,8 @@ A set of link:https://github.com/slsa-framework/[SLSA builders] for different la
 The following snippet shows the minimum configuration to run the builder on GitHub Actions.
 
 [source,yaml]
+[subs="attributes"]
+.workflow file
 ----
   release:
     permissions:
@@ -23,7 +31,7 @@ The following snippet shows the minimum configuration to run the builder on GitH
       id-token: write
       actions: read
       packages: write
-    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_go.yml@v1.0.0
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_go.yml@v{project-version}
     with:
       project-version: ${{ needs.precheck.outputs.VERSION }}
       rekor-log-public: true
@@ -84,6 +92,8 @@ distributions:
 The following snippet shows the minimum configuration to run the builder on GitHub Actions. Supports both Apache Maven, and Gradle.
 
 [source,yaml]
+[subs="attributes"]
+.workflow file
 ----
   release:
     permissions:
@@ -91,7 +101,7 @@ The following snippet shows the minimum configuration to run the builder on GitH
       id-token: write
       actions: read
       packages: write
-    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_java.yml@v1.0.0
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_java.yml@v{project-version}
     with:
       project-version: ${{ needs.precheck.outputs.VERSION }}
       rekor-log-public: true
@@ -102,7 +112,7 @@ The following snippet shows the minimum configuration to run the builder on GitH
 It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
 
 [source,yaml]
-.jreleaser.yaml
+.jreleaser.yml
 ----
 hooks:
   script:
@@ -119,6 +129,8 @@ hooks:
 The following snippet shows the minimum configuration to run the builder on GitHub Actions.
 
 [source,yaml]
+[subs="attributes"]
+.workflow file
 ----
   release:
     permissions:
@@ -126,7 +138,7 @@ The following snippet shows the minimum configuration to run the builder on GitH
       id-token: write
       actions: read
       packages: write
-    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_rust.yml@v1.0.0
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_rust.yml@v{project-version}
     with:
       project-version: ${{ inputs.version }}
       rekor-log-public: true
@@ -184,6 +196,8 @@ distributions:
 The following snippet shows the minimum configuration to run the builder on GitHub Actions.
 
 [source,yaml]
+[subs="attributes"]
+.workflow file
 ----
   release:
     permissions:
@@ -191,7 +205,7 @@ The following snippet shows the minimum configuration to run the builder on GitH
       id-token: write
       actions: read
       packages: write
-    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_zig.yml@v1.0.0
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_zig.yml@v{project-version}
     with:
       project-version: ${{ inputs.version }}
       rekor-log-public: true
