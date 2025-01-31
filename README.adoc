@@ -1,0 +1,246 @@
+= JReleaser SLSA
+:linkattrs:
+:project-owner: jreleaser
+:project-name:  jreleaser-slsa
+
+image:https://img.shields.io/github/v/release/{project-owner}/{project-name}["GitHub release", link="https://github.com/{project-owner}/{project-name}/releases"]
+image:https://img.shields.io/mastodon/follow/109318759441003625?domain=https%3A%2F%2Ffosstodon.org&style=social[Mastodon Follow]
+image:https://img.shields.io/badge/%20-white?label=Follow%20%40jreleaser.org&labelColor=white&logo=bluesky&style=flat[Bluesky Follow, link="https://bsky.app/profile/jreleaser.org"]
+
+A set of link:https://github.com/slsa-framework/[SLSA builders] for different languages, relying on link:https://github.com/jreleaser/release-action[].
+
+== Builders
+
+=== Go
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions.
+
+[source,yaml]
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_go.yml@v1.0.0
+    with:
+      project-version: ${{ needs.precheck.outputs.VERSION }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yml
+----
+matrix:
+  rows:
+    - { goos: darwin,  goarch: arm64, platform: osx-aarch_64     }
+    - { goos: darwin,  goarch: amd64, platform: osx-x86_64       }
+    - { goos: linux,   goarch: arm64, platform: linux-aarch_64   }
+    - { goos: linux,   goarch: amd64, platform: linux-x86_64     }
+    - { goos: windows, goarch: arm64, platform: windows-aarch_64 }
+    - { goos: windows, goarch: amd64, platform: windows-x86_64   }
+
+hooks:
+  script:
+    before:
+      - run: |
+          echo "building ${GOOS}-${GOARCH}"
+          go build -o target/${GOOS}-${GOARCH}/ src/helloworld.go
+        applyDefaultMatrix: true
+        verbose: true
+        environment:
+          GOOS: '{{ matrix.goos }}'
+          GOARCH: '{{ matrix.goarch }}'
+        filter:
+          includes: ['assemble']
+
+assemble:
+  archive:
+    helloworld:
+      active: ALWAYS
+      formats: [ ZIP ]
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.goos }}-{{ matrix.goarch }}'
+      fileSets:
+        - input: 'target/{{ matrix.goos }}-{{ matrix.goarch }}'
+          output: 'bin'
+          includes: [ 'helloworld{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+distributions:
+  helloworld:
+    executable:
+      windowsExtension: exe
+----
+
+=== Java
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions. Supports both Apache Maven, and Gradle.
+
+[source,yaml]
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_java.yml@v1.0.0
+    with:
+      project-version: ${{ needs.precheck.outputs.VERSION }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yaml
+----
+hooks:
+  script:
+    before:
+      - run: './mvnw -ntp verify'
+        condition: '"{{ Env.CI }}" == true'
+        verbose: true
+        filter:
+          includes: ['assemble']
+----
+
+=== Rust
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions.
+
+[source,yaml]
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_rust.yml@v1.0.0
+    with:
+      project-version: ${{ inputs.version }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yml
+----
+matrix:
+  rows:
+    - { target: aarch64-apple-darwin,      platform: osx-aarch_64   }
+    - { target: x86_64-apple-darwin,       platform: osx-x86_64     }
+    - { target: aarch64-unknown-linux-gnu, platform: linux-aarch_64 }
+    - { target: x86_64-unknown-linux-gnu,  platform: linux-x86_64   }
+    - { target: x86_64-pc-windows-gnu,     platform: windows-x86_64 }
+
+hooks:
+  script:
+    before:
+      - run: |
+          rustup target add {{ matrix.target }}
+          cargo install --locked cargo-zigbuild
+          cargo zigbuild --target {{ matrix.target }}
+        applyDefaultMatrix: true
+        verbose: true
+        filter:
+          includes: ['assemble']
+
+assemble:
+  archive:
+    helloworld:
+      active: ALWAYS
+      formats: [ ZIP ]
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.target }}'
+      fileSets:
+        - input: 'target/{{ matrix.target }}'
+          output: 'bin'
+          includes: [ 'helloworld{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+distributions:
+  helloworld:
+    executable:
+      windowsExtension: exe
+----
+
+=== Zig
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions.
+
+[source,yaml]
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_zig.yml@v1.0.0
+    with:
+      project-version: ${{ inputs.version }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yml
+----
+matrix:
+  rows:
+    - { os: macos,   arch: aarch64, ext: '',     platform: osx-aarch_64     }
+    - { os: macos,   arch: x86_64,  ext: '',     platform: osx-x86_64       }
+    - { os: linux,   arch: aarch64, ext: '',     platform: linux-aarch_64   }
+    - { os: linux,   arch: x86_64,  ext: '',     platform: linux-x86_64     }
+    - { os: windows, arch: aarch64, ext: '.exe', platform: windows-aarch_64 }
+    - { os: windows, arch: x86_64,  ext: '.exe', platform: windows-x86_64   }
+
+hooks:
+  script:
+    before:
+      - run: |
+          mkdir -p target/{{ matrix.arch }}-{{ matrix.os }}
+          zig build-exe src/main.zig -target {{ matrix.arch }}-{{ matrix.os }} \
+          -O ReleaseSmall -femit-bin=target/{{ matrix.arch }}-{{ matrix.os }}/helloworld{{ matrix.ext }}
+        applyDefaultMatrix: true
+        filter:
+          includes: ['assemble']
+
+assemble:
+  archive:
+    helloworld:
+      active: ALWAYS
+      formats: [ ZIP ]
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.arch }}-{{ matrix.os }}'
+      fileSets:
+        - input: 'target/{{ matrix.arch }}-{{ matrix.os }}'
+          output: 'bin'
+          includes: [ 'helloworld{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+distributions:
+  helloworld:
+    executable:
+      windowsExtension: exe
+----
+
