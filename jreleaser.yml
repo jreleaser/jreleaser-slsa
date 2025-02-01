@@ -1,0 +1,20 @@
+project:
+  name: jreleaser-slsa
+  description: SLSA Builders with JReleaser
+  longDescription: SLSA Builders with JReleaser
+  links:
+    homepage: https://github.com/jreleaser/jreleaser-slsa
+  authors:
+    - Andres Almiray
+  license: APACHE-2.0
+  inceptionYear: 2023
+  stereotype: NONE
+
+release:
+  github:
+    overwrite: true
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
