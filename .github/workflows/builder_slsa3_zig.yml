@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Generate the token
         id: generate
-        uses: slsa-framework/slsa-github-generator/actions/delegator/setup-generic@v2.0.0
+        uses: slsa-framework/slsa-github-generator/actions/delegator/setup-generic@v2.1.0
         with:
           slsa-workflow-recipient: 'delegator_generic_slsa3.yml'
           slsa-rekor-log-public: ${{ inputs.rekor-log-public }}
@@ -78,7 +78,7 @@ jobs:
       contents: write # For asset uploads.
       actions: read   # For the entrypoint.
       packages: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/delegator_generic_slsa3.yml@v2.0.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/delegator_generic_slsa3.yml@v2.1.0
     with:
       slsa-token: ${{ needs.slsa-setup.outputs.slsa-token }}
     secrets:
@@ -95,14 +95,14 @@ jobs:
           ref: ${{ inputs.branch }}
 
       - name: Download provenance
-        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-attestations-download@v2.0.0
+        uses: slsa-framework/slsa-github-generator/actions/nodejs/secure-attestations-download@v2.1.0
         with:
           name: ${{ needs.slsa-run.outputs.attestations-download-name }}
           path: slsa
           sha256: ${{ needs.slsa-run.outputs.attestations-download-sha256 }}
 
       - name: Download JReleaser output
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v 4.1.8
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v 4.2.1
         with:
           name: jreleaser-release
           path: jreleaser-release

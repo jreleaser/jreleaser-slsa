@@ -58,7 +58,7 @@ runs:
       run: git checkout ${{ fromJson(inputs.slsa-workflow-inputs).tag-or-ref }}
 
     - name: Setup Java
-      uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v 4.7.0
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v 4.7.1
       with:
         distribution: ${{ fromJson(inputs.slsa-workflow-inputs).java-distribution }}
         java-version: ${{ fromJson(inputs.slsa-workflow-inputs).java-version }}
@@ -76,7 +76,7 @@ runs:
 
     - name: JReleaser output
       if: always()
-      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v 4.6.0
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v 4.6.2
       with:
         name: jreleaser-assemble
         path: |
@@ -96,7 +96,7 @@ runs:
 
     - name: JReleaser output
       if: always()
-      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v 4.6.0
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v 4.6.2
       with:
         name: jreleaser-release
         path: |
