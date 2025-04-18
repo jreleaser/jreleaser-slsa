@@ -17,6 +17,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Version
+        shell: bash
+        run: |
+          sed -i -e "s/^\:project-version\:\ .*/:project-version: ${{ github.event.inputs.version }}/g" README.adoc
+          git config --global user.email "${{ secrets.COMMIT_EMAIL }}"
+          git config --global user.name "Andres Almiray"
+          git commit -a -m "Releasing version ${{ github.event.inputs.version }}"
+          git push origin main
+
       - name: Release
         uses: jreleaser/release-action@v2
         with:
