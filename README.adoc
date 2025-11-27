@@ -2,7 +2,7 @@
 :linkattrs:
 :project-owner:   jreleaser
 :project-name:    jreleaser-slsa
-:project-version: 1.1.0
+:project-version: 1.2.0
 
 image:https://img.shields.io/github/v/release/{project-owner}/{project-name}["GitHub release", link="https://github.com/{project-owner}/{project-name}/releases"]
 image:https://img.shields.io/mastodon/follow/109318759441003625?domain=https%3A%2F%2Ffosstodon.org&style=social[Mastodon Follow]
