@@ -12,6 +12,7 @@ A set of link:https://github.com/slsa-framework/[SLSA builders] for different la
 
  * <<Go>>
  * <<Java>>
+ * <<Ocaml>>
  * <<Rust>>
  * <<Zig>>
 
@@ -122,6 +123,73 @@ hooks:
         verbose: true
         filter:
           includes: ['assemble']
+----
+
+=== Ocaml
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions.
+
+[source,yaml]
+[subs="attributes"]
+.workflow file
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_ocaml.yml@v{project-version}
+    with:
+      project-version: ${{ inputs.version }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yml
+----
+matrix:
+  rows:
+    - { ext: '',     platform: osx-aarch_64   }
+    - { ext: '',     platform: osx-x86_64     }
+    - { ext: '',     platform: linux-x86_64   }
+    - { ext: '',     platform: linux-aarch_64 }
+    - { ext: '.exe', platform: windows-x86_64 }
+
+hooks:
+  script:
+    before:
+      - run: |
+          echo "Compiling {{ matrix.platform }}"
+          mkdir -p target/{{ matrix.platform }}
+          opam exec -- ocamlc -o target/{{ matrix.platform }}/helloworld{{ matrix.ext }} src/helloworld.ml
+        verbose: true
+        applyDefaultMatrix: true
+        filter:
+          includes: ['assemble']
+
+assemble:
+  archive:
+    helloworld:
+      active: ALWAYS
+      formats: [ ZIP ]
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.platform }}'
+      fileSets:
+        - input: 'target/{{ matrix.platform }}'
+          output: 'bin'
+          includes: [ 'helloworld{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+distributions:
+  helloworld:
+    executable:
+      windowsExtension: exe
 ----
 
 === Rust
