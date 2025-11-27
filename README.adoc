@@ -10,12 +10,78 @@ image:https://img.shields.io/badge/%20-white?label=Follow%20%40jreleaser.org&lab
 
 A set of link:https://github.com/slsa-framework/[SLSA builders] for different languages, relying on link:https://github.com/jreleaser/release-action[]. The following languages are currently supported, more to comee later:
 
+ * <<Deno>>
  * <<Go>>
  * <<Java>>
  * <<Rust>>
  * <<Zig>>
 
 == Builders
+
+=== Deno
+
+The following snippet shows the minimum configuration to run the builder on GitHub Actions.
+
+[source,yaml]
+[subs="attributes"]
+.workflow file
+----
+  release:
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+      packages: write
+    uses: jreleaser/jreleaser-slsa/.github/workflows/builder_slsa3_deno.yml@v{project-version}
+    with:
+      project-version: ${{ needs.precheck.outputs.VERSION }}
+      rekor-log-public: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+----
+
+It's expected that the JReleaser configuration defines build instructions using the `hooks` feature, such as
+
+[source,yaml]
+.jreleaser.yml
+----
+matrix:
+  rows:
+    - { target: aarch64-apple-darwin,      ext: '',     platform: osx-aarch_64   }
+    - { target: x86_64-apple-darwin,       ext: '',     platform: osx-x86_64     }
+    - { target: aarch64-unknown-linux-gnu, ext: '',     platform: linux-aarch_64 }
+    - { target: x86_64-unknown-linux-gnu,  ext: '',     platform: linux-x86_64   }
+    - { target: x86_64-pc-windows-msvc,    ext: '.exe', platform: windows-x86_64 }
+
+hooks:
+  script:
+    before:
+      - run: |
+          deno compile --target {{ matrix.target }} -o target/{{ matrix.platform }}/helloworld{{ matrix.ext }} main.ts
+        applyDefaultMatrix: true
+        verbose: true
+        filter:
+          includes: ['assemble']
+
+assemble:
+  archive:
+    helloworld:
+      active: ALWAYS
+      formats: [ ZIP ]
+      applyDefaultMatrix: true
+      archiveName: '{{distributionName}}-{{projectVersion}}-{{ matrix.platform }}'
+      fileSets:
+        - input: 'target/{{ matrix.platform }}'
+          output: 'bin'
+          includes: [ 'helloworld{.exe,}' ]
+        - input: '.'
+          includes: [ 'LICENSE' ]
+
+distributions:
+  helloworld:
+    executable:
+      windowsExtension: exe
+----
 
 === Go
 
