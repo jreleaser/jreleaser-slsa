@@ -47,7 +47,7 @@ runs:
   using: 'composite'
   steps:
     - name: Checkout branch
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v 4.2.2
+      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v 6.0.0
       with:
         fetch-depth: 0
         ref: ${{ fromJson(inputs.slsa-workflow-inputs).branch }}
@@ -58,12 +58,12 @@ runs:
       run: git checkout ${{ fromJson(inputs.slsa-workflow-inputs).tag-or-ref }}
 
     - name: Setup Go
-      uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v 5.4.0
+      uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v 6.1.0
       with:
         go-version: ${{ fromJson(inputs.slsa-workflow-inputs).go-version }}
 
     - name: Assemble
-      uses: jreleaser/release-action@f69e545b05f149483cecb2fb81866247992694b8 # v 2.4.2
+      uses: jreleaser/release-action@90ac653bb9c79d11179e65d81499f3f34527dcd5 # v 2.5.0
       with:
         version: ${{ fromJson(inputs.slsa-workflow-inputs).jreleaser-version }}
         arguments: assemble
@@ -73,7 +73,7 @@ runs:
 
     - name: JReleaser output
       if: always()
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v 4.6.2
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v 5.0.0
       with:
         name: jreleaser-assemble
         path: |
@@ -81,7 +81,7 @@ runs:
           out/jreleaser/output.properties
 
     - name: Release
-      uses: jreleaser/release-action@f69e545b05f149483cecb2fb81866247992694b8 # v 2.4.2
+      uses: jreleaser/release-action@90ac653bb9c79d11179e65d81499f3f34527dcd5 # v 2.5.0
       with:
         version: ${{ fromJson(inputs.slsa-workflow-inputs).jreleaser-version }}
         arguments: release
@@ -93,7 +93,7 @@ runs:
 
     - name: JReleaser output
       if: always()
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v 4.6.2
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v 5.0.0
       with:
         name: jreleaser-release
         path: |
