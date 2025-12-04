@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-name: JReleaser CSharp SLSA Generator
+name: JReleaser DotNet SLSA Generator
 
 on:
   workflow_call:
@@ -37,7 +37,7 @@ on:
       dotnet-version:
         description: 'Dotnet version'
         required: false
-        default: "8.0"
+        default: '8.0'
         type: string
       jreleaser-version:
         description: 'JReleaser version'
@@ -68,7 +68,7 @@ jobs:
           slsa-workflow-recipient: 'delegator_generic_slsa3.yml'
           slsa-rekor-log-public: ${{ inputs.rekor-log-public }}
           slsa-runner-label: 'ubuntu-latest'
-          slsa-build-action-path: './internal/builders/csharp'
+          slsa-build-action-path: './internal/builders/dotnet'
           slsa-workflow-inputs: ${{ toJson(inputs) }}
 
   slsa-run:

@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-name: JReleaser CSharp Builder
+name: JReleaser DotNet Builder
 
-description: 'JReleaser CSharp Builder'
+description: 'JReleaser DotNet Builder'
 
 inputs:
   slsa-workflow-inputs:
