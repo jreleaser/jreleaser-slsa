@@ -37,7 +37,7 @@ on:
       deno-version:
         description: "Deno version"
         required: false
-        default: stable
+        default: lts
         type: string
       jreleaser-version:
         description: "JReleaser version"
